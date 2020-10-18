@@ -17,17 +17,34 @@ public class HelloClassLoader extends ClassLoader{
     }
 
     private byte[] getClassFile() {
+        FileInputStream fileInputStream = null;
+        ByteArrayOutputStream bos = null;
         try {
-            FileInputStream fileInputStream = new FileInputStream("./Hello.xlass");
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            fileInputStream = new FileInputStream("/Users/wujiajia/IdeaProjects/leetcode/src/main/java/com/whf/study/gk/Hello.xlass");
+            bos = new ByteArrayOutputStream();
             byte[] buffer = new byte[4096];
             int readn = 0;
-            while((readn = fileInputStream.read(buffer)) != -1) {
+            while ((readn = fileInputStream.read(buffer)) != -1) {
                 bos.write(buffer, 0, readn);
             }
             return bos.toByteArray();
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            if (fileInputStream != null) {
+                try {
+                    fileInputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if(bos != null) {
+                try {
+                    bos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
         return null;
     }
