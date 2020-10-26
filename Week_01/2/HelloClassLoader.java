@@ -21,7 +21,7 @@ public class HelloClassLoader extends ClassLoader{
         FileInputStream fileInputStream = null;
         ByteArrayOutputStream bos = null;
         try {
-            fileInputStream = new FileInputStream("/Users/wujiajia/IdeaProjects/leetcode/src/main/java/com/whf/study/gk/Hello.xlass");
+            fileInputStream = new FileInputStream("./Hello.xlass");
             bos = new ByteArrayOutputStream();
             byte[] buffer = new byte[4096];
             int readn = 0;
