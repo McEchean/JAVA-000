@@ -4,6 +4,7 @@ import com.github.zibuyu28.outbound.HttpOutboundHandler;
 import com.github.zibuyu28.outbound.NamedThreadFactory;
 import com.github.zibuyu28.router.HttpEndpointRouter;
 import com.github.zibuyu28.router.RandomEndpointRouter;
+import com.github.zibuyu28.router.RouterFactory;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
@@ -39,7 +40,7 @@ public class HttpClient4OutboundHandler implements HttpOutboundHandler {
     private String backendUrl;
 
     public HttpClient4OutboundHandler() {
-        this.router = new RandomEndpointRouter();
+        this.router = RouterFactory.newRouter();
         int cores = Runtime.getRuntime().availableProcessors() * 2;
         long keepAliveTime = 1000;
         int queueSize = 2048;

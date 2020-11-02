@@ -4,6 +4,7 @@ import com.github.zibuyu28.inbound.HttpInboundInitializer;
 import com.github.zibuyu28.outbound.HttpOutboundHandler;
 import com.github.zibuyu28.router.HttpEndpointRouter;
 import com.github.zibuyu28.router.RandomEndpointRouter;
+import com.github.zibuyu28.router.RouterFactory;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;
@@ -33,7 +34,7 @@ public class NettyClientOutboundHandler implements HttpOutboundHandler {
     private final HttpEndpointRouter router;
 
     public NettyClientOutboundHandler() {
-        this.router = new RandomEndpointRouter();
+        this.router = RouterFactory.newRouter();
         this.clientEventLoop = new NioEventLoopGroup();
         this.clientBootstrap = new Bootstrap().option(ChannelOption.SO_KEEPALIVE, true);
 

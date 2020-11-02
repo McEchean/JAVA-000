@@ -1,5 +1,6 @@
 package com.github.zibuyu28.inbound;
 
+import com.github.zibuyu28.util.Prop;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.Channel;
@@ -38,9 +39,9 @@ public class HttpInboundServer {
             serverBootstrap.channel(NioServerSocketChannel.class)
                     .handler(new LoggingHandler(LogLevel.INFO))
                     .childHandler(new HttpInboundInitializer());
-
-            Channel ch = serverBootstrap.bind(9888).sync().channel();
-            log.info("开启netty http服务器，监听地址和端口为 http://127.0.0.1:" + "9888" + '/');
+            int port = Integer.parseInt(Prop.getOrDefault("inbound.listen.port", "9888"));
+            Channel ch = serverBootstrap.bind(port).sync().channel();
+            log.info("开启netty http服务器，监听地址和端口为 http://127.0.0.1:" + port + '/');
             ch.closeFuture().sync();
         } finally {
             bossEventLoop.shutdownGracefully();

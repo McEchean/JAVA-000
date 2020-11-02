@@ -11,5 +11,6 @@ public class AddRequestHeadFilter implements HttpRequestFilter {
     @Override
     public void filter(FullHttpRequest fullRequest, ChannelHandlerContext ctx) {
         fullRequest.headers().add("nio","hello filter");
+        log.info("nio header add to full request");
     }
 }

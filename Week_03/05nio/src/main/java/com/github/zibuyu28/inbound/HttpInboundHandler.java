@@ -3,6 +3,7 @@ package com.github.zibuyu28.inbound;
 import com.github.zibuyu28.filter.AddRequestHeadFilter;
 import com.github.zibuyu28.filter.HttpRequestFilter;
 import com.github.zibuyu28.outbound.HttpOutboundHandler;
+import com.github.zibuyu28.outbound.OutboundFactory;
 import com.github.zibuyu28.outbound.httpclient4.HttpClient4OutboundHandler;
 import com.github.zibuyu28.outbound.nettyclient.NettyClientOutboundHandler;
 import com.github.zibuyu28.outbound.okhttp.OkHttpClientOutboundHandler;
@@ -13,18 +14,22 @@ import io.netty.util.ReferenceCountUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class HttpInboundHandler extends ChannelInboundHandlerAdapter {
 
     private final static Logger log = LoggerFactory.getLogger(HttpInboundHandler.class);
 
-    private final HttpRequestFilter filter;
+    private final List<HttpRequestFilter> filters;
     private final HttpOutboundHandler handler;
 
 
     public HttpInboundHandler() {
-        this.filter = new AddRequestHeadFilter();
-        this.handler = new NettyClientOutboundHandler();
+        this.filters = new ArrayList<>();
+        this.filters.add(new AddRequestHeadFilter());
+        this.handler = OutboundFactory.newOutboundHandler();
     }
 
 
@@ -39,7 +44,9 @@ public class HttpInboundHandler extends ChannelInboundHandlerAdapter {
         try {
             log.info("channelRead 接收到请求, 获取到 msg 类型是 : {}", msg.getClass().getName());
             FullHttpRequest fullRequest = (FullHttpRequest) msg;
-            filter.filter(fullRequest, ctx);
+            for (HttpRequestFilter ft :filters) {
+                ft.filter(fullRequest, ctx);
+            }
             handler.handle(fullRequest, ctx);
         } catch(Exception e) {
             e.printStackTrace();
