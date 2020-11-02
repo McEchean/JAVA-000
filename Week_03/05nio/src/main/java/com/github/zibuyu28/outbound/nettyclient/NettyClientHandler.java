@@ -47,6 +47,7 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter {
                     channelHandlerContext.write(response);
                 }
                 channelHandlerContext.flush();
+                NettyClientOutboundHandler.ccid.remove(ctx.channel().id().asLongText());
             }
         }
     }
