@@ -3,7 +3,7 @@
 1. 基本实现了三种outboundHandler
     * httpclient4 : 这个主要是老师实现的，自己稍微做了一些无关紧要的改动
     * okHttp : 主要流程也是参考老师的代码实现的
-    * nettyclient : 这个实现也是差不多的，但是在实现的时候遇到了一些坑，最后的sync加了之后会一直block，这个是因为自己对netty不理解导致的
+    * nettyclient : 这个实现也是差不多的，但是在实现的时候遇到了一些坑，最后的sync加了之后会一直block，这个是因为自己对netty不理解导致的 目前这个client还是有问题，弄了好久没弄好，主要还是对netty不理解导致的，准备等这看老师的标准答案了，
 2. 实现了一个很简单的filter
     * 增加了一个header -> nio : hello filter
     
