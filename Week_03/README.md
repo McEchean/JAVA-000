@@ -12,3 +12,24 @@
 4. 实现了两种后端服务endpoint提供者
     * default : 主要通过默认的配置来读取endpoint
     * etcd : 通过etcd来实时更新endpoint，简单实现了功能
+
+5. 一些多实现的可以通过配置来实现配置，示例：
+    ```java
+   #filter=
+   
+   #inbound
+   inbound.listen.port=8989
+   #outbound
+   outbound.type=nettyclient
+   
+   ##router random.etcd
+   #router.type=random
+   #router.endpoints.type=etcd
+   #router.endpoints.etcd.hosts=http://127.0.0.1:2379
+   #router.endpoints.etcd.configKey=test-endpoint
+   
+   #router random.default
+   router.type=random
+   router.endpoints.type=default
+   router.endpoints.default.hosts=127.0.0.1:8088,localhost:8088
+    ```
