@@ -33,13 +33,17 @@ public class HttpClient4OutboundHandler implements HttpOutboundHandler {
 
     private final static Logger log = LoggerFactory.getLogger(HttpClient4OutboundHandler.class);
 
+    public static class F {
+        private static HttpClient4OutboundHandler INSTANCE = new HttpClient4OutboundHandler();
+    }
+
     private final HttpEndpointRouter router;
 
     private CloseableHttpAsyncClient httpclient;
     private ExecutorService proxyService;
     private String backendUrl;
 
-    public HttpClient4OutboundHandler() {
+    private HttpClient4OutboundHandler() {
         this.router = RouterFactory.newRouter();
         int cores = Runtime.getRuntime().availableProcessors() * 2;
         long keepAliveTime = 1000;
@@ -62,6 +66,10 @@ public class HttpClient4OutboundHandler implements HttpOutboundHandler {
                 .setKeepAliveStrategy((response,context) -> 6000)
                 .build();
         httpclient.start();
+    }
+
+    public static HttpClient4OutboundHandler getInstance() {
+        return F.INSTANCE;
     }
 
 

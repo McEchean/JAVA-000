@@ -10,11 +10,11 @@ public class OutboundFactory {
         OutboundHandlerType outboundHandlerType = OutboundHandlerType.parseType(Prop.getOrDefault("outbound.type", OutboundHandlerType.HttpClient4.getName()));
         switch (outboundHandlerType) {
             case HttpClient4:
-                return new HttpClient4OutboundHandler();
+                return HttpClient4OutboundHandler.getInstance();
             case NettyClient:
-                return new NettyClientOutboundHandler();
+                return NettyClientOutboundHandler.getInstance();
             case OkHttpClient:
-                return new OkHttpClientOutboundHandler();
+                return OkHttpClientOutboundHandler.getInstance();
         }
         return null;
     }

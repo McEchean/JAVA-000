@@ -9,6 +9,7 @@ import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpContent;
 import io.netty.handler.codec.http.HttpResponse;
+import io.netty.util.AttributeKey;
 
 import static io.netty.handler.codec.http.HttpResponseStatus.NO_CONTENT;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
@@ -39,16 +40,10 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter {
             response = new DefaultFullHttpResponse(HTTP_1_1, NO_CONTENT);
             exceptionCaught(ctx, e);
         } finally {
-            if(NettyClientOutboundHandler.ccid.containsKey(ctx.channel().id().asLongText())) {
-                ChannelHandlerContext channelHandlerContext = NettyClientOutboundHandler.ccid.get(ctx.channel().id().asLongText());
-                if(channelHandlerContext.channel().isActive()) {
-                    channelHandlerContext.write(response).addListener(ChannelFutureListener.CLOSE);
-                } else {
-                    channelHandlerContext.write(response);
-                }
-                channelHandlerContext.flush();
-                NettyClientOutboundHandler.ccid.remove(ctx.channel().id().asLongText());
-            }
+            ctx.channel().attr(AttributeKey.valueOf("res")).set(response);
+            ctx.flush();
+            ctx.close();
         }
     }
+
 }

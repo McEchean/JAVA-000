@@ -28,6 +28,10 @@ public class OkHttpClientOutboundHandler implements HttpOutboundHandler {
 
     private final static Logger log = LoggerFactory.getLogger(OkHttpClientOutboundHandler.class);
 
+    public static class F {
+        private static OkHttpClientOutboundHandler INSTANCE = new OkHttpClientOutboundHandler();
+    }
+
     private final OkHttpClient okClient;
 
     private final HttpEndpointRouter router;
@@ -49,6 +53,10 @@ public class OkHttpClientOutboundHandler implements HttpOutboundHandler {
         this.okClient = new OkHttpClient.Builder()
                 .callTimeout(10, TimeUnit.SECONDS)
                 .connectTimeout(1, TimeUnit.SECONDS).build();
+    }
+
+    public static OkHttpClientOutboundHandler getInstance() {
+        return F.INSTANCE;
     }
 
     public OkHttpClientOutboundHandler(OkHttpClient client) {
