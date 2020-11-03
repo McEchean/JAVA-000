@@ -9,6 +9,18 @@ import java.util.stream.Collectors;
 
 public class DefaultEndpointsProvider implements EndpointsProvider {
 
+    public static class F {
+        private static DefaultEndpointsProvider INSTANCE = new DefaultEndpointsProvider();
+    }
+
+    public static DefaultEndpointsProvider getInstance() {
+        return F.INSTANCE;
+    }
+
+    private DefaultEndpointsProvider() {
+
+    }
+
     @Override
     public List<String> availableEndpoints() throws Exception {
         String hostsv = Prop.getOrDefault("router.endpoints.default.hosts");

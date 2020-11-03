@@ -17,10 +17,18 @@ import java.util.stream.Collectors;
 public class EtcdConfigEndpointsProvider implements EndpointsProvider {
     private static final Logger log = LoggerFactory.getLogger(EtcdConfigEndpointsProvider.class);
 
+    public static class F {
+        private static EtcdConfigEndpointsProvider INSTANCE = new EtcdConfigEndpointsProvider();
+    }
+
+    public static EtcdConfigEndpointsProvider getInstance() {
+        return F.INSTANCE;
+    }
+
     private final Client etcdClient;
     private final CopyOnWriteArrayList<String> availableEndpointList;
 
-    public EtcdConfigEndpointsProvider() {
+    private EtcdConfigEndpointsProvider() {
         this.etcdClient = Client.builder()
                 .endpoints(Prop.getOrDefault("router.endpoints.etcd.hosts","http://127.0.0.1:2379").split(","))
                 .build();

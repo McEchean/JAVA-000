@@ -11,9 +11,9 @@ public class EndpointProviderFactory {
         EndpointProviderType rt = EndpointProviderType.parseType(Prop.getOrDefault("router.endpoints.type", EndpointProviderType.DEFAULT.getName()));
         switch (rt) {
             case DEFAULT:
-                return new DefaultEndpointsProvider();
+                return DefaultEndpointsProvider.getInstance();
             case ETCD:
-                return new EtcdConfigEndpointsProvider();
+                return EtcdConfigEndpointsProvider.getInstance();
             default:
                 log.error("endpoint provider type({}) not support now",rt);
                 return null;

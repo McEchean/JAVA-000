@@ -11,7 +11,7 @@ public class RouterFactory {
         RouterType rt = RouterType.parseType(Prop.getOrDefault("router.type", RouterType.Random.getName()));
         switch (rt) {
             case Random:
-                return new RandomEndpointRouter();
+                return RandomEndpointRouter.getInstance();
             default:
                 log.error("router type({}) not support now",rt);
                 return null;

@@ -2,6 +2,7 @@ package com.github.zibuyu28.router;
 
 import com.github.zibuyu28.router.endpoint.EndpointProviderFactory;
 import com.github.zibuyu28.router.endpoint.EndpointsProvider;
+import com.github.zibuyu28.router.endpoint.EtcdConfigEndpointsProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,9 +11,19 @@ import java.util.Random;
 
 public class RandomEndpointRouter implements HttpEndpointRouter {
     private static final Logger log = LoggerFactory.getLogger(RandomEndpointRouter.class);
+
+    public static class F {
+        private static RandomEndpointRouter INSTANCE = new RandomEndpointRouter();
+    }
+
+    public static RandomEndpointRouter getInstance() {
+        return F.INSTANCE;
+    }
+
+
     private final EndpointsProvider endpointsProvider;
 
-    public RandomEndpointRouter() {
+    private RandomEndpointRouter() {
         this.endpointsProvider = EndpointProviderFactory.newProvider();
     }
 

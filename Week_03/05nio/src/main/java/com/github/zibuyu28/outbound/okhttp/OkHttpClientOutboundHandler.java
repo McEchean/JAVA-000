@@ -60,7 +60,7 @@ public class OkHttpClientOutboundHandler implements HttpOutboundHandler {
     }
 
     public OkHttpClientOutboundHandler(OkHttpClient client) {
-        this.router = new RandomEndpointRouter();
+        this.router = RouterFactory.newRouter();
         int cores = Runtime.getRuntime().availableProcessors() * 2;
         int timeout = 1000;
         int queueSize = 1024;
