@@ -2,14 +2,12 @@ package com.github.zibuyu28.outbound.nettyclient;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpContent;
 import io.netty.handler.codec.http.HttpResponse;
-import io.netty.util.AttributeKey;
 
 import static io.netty.handler.codec.http.HttpResponseStatus.NO_CONTENT;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
@@ -40,9 +38,12 @@ public class NettyClientHandler extends ChannelInboundHandlerAdapter {
             response = new DefaultFullHttpResponse(HTTP_1_1, NO_CONTENT);
             exceptionCaught(ctx, e);
         } finally {
-            ctx.channel().attr(AttributeKey.valueOf("res")).set(response);
-            ctx.flush();
-            ctx.close();
+
+            ChannelHandlerContext channelHandlerContext = ctx.channel().attr(NettyClientOutboundHandler.CURRENT_REQ_BOUND_WITH_THE_CHANNEL).get();
+            if(channelHandlerContext.channel().isActive()) {
+                channelHandlerContext.write(response);
+            }
+            channelHandlerContext.flush();
         }
     }
 

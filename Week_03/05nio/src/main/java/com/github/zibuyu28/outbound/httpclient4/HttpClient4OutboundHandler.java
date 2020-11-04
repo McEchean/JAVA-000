@@ -33,7 +33,7 @@ public class HttpClient4OutboundHandler implements HttpOutboundHandler {
 
     private final static Logger log = LoggerFactory.getLogger(HttpClient4OutboundHandler.class);
 
-    public static class F {
+    private static class F {
         private static HttpClient4OutboundHandler INSTANCE = new HttpClient4OutboundHandler();
     }
 

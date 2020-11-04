@@ -28,7 +28,7 @@ public class OkHttpClientOutboundHandler implements HttpOutboundHandler {
 
     private final static Logger log = LoggerFactory.getLogger(OkHttpClientOutboundHandler.class);
 
-    public static class F {
+    private static class F {
         private static OkHttpClientOutboundHandler INSTANCE = new OkHttpClientOutboundHandler();
     }
 

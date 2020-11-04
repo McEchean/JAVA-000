@@ -86,3 +86,19 @@
         Transfer/sec:     13.07KB
         ```
     * 可以看出nettyclient的性能是有问题的，这个不知道问题是什么
+    * 经过不懈的努力终于好像好一些了
+        ```java
+      Running 30s test @ http://127.0.0.1:8989/api/hello
+        12 threads and 40 connections
+        Thread Stats   Avg      Stdev     Max   +/- Stdev
+          Latency   710.87us    8.41ms 193.44ms   99.47%
+          Req/Sec     5.76k     1.71k    6.88k    89.41%
+        Latency Distribution
+           50%  146.00us
+           75%  159.00us
+           90%  194.00us
+           99%  505.00us
+        184067 requests in 30.09s, 8.43MB read
+      Requests/sec:   6116.40
+      Transfer/sec:    286.71KB
+        ```
