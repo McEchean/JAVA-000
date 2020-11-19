@@ -22,6 +22,9 @@ import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Component;
 
 import java.util.concurrent.*;
 
@@ -29,22 +32,27 @@ import static io.netty.handler.codec.http.HttpResponseStatus.NO_CONTENT;
 import static io.netty.handler.codec.http.HttpResponseStatus.OK;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
+@Component
+@Lazy
 public class HttpClient4OutboundHandler implements HttpOutboundHandler {
 
     private final static Logger log = LoggerFactory.getLogger(HttpClient4OutboundHandler.class);
 
-    private static class F {
-        private static HttpClient4OutboundHandler INSTANCE = new HttpClient4OutboundHandler();
-    }
+//    private static class F {
+//        private static HttpClient4OutboundHandler INSTANCE = new HttpClient4OutboundHandler();
+//    }
+//    public static HttpClient4OutboundHandler getInstance() {
+//        return F.INSTANCE;
+//    }
 
-    private final HttpEndpointRouter router;
+    @Autowired
+    private RouterFactory routerFactory;
 
     private CloseableHttpAsyncClient httpclient;
     private ExecutorService proxyService;
-    private String backendUrl;
 
-    private HttpClient4OutboundHandler() {
-        this.router = RouterFactory.newRouter();
+    public HttpClient4OutboundHandler() {
+        log.info("HttpClient4OutboundHandler 实例化了");
         int cores = Runtime.getRuntime().availableProcessors() * 2;
         long keepAliveTime = 1000;
         int queueSize = 2048;
@@ -68,9 +76,7 @@ public class HttpClient4OutboundHandler implements HttpOutboundHandler {
         httpclient.start();
     }
 
-    public static HttpClient4OutboundHandler getInstance() {
-        return F.INSTANCE;
-    }
+
 
 
     public void handle(FullHttpRequest req, ChannelHandlerContext ctx) throws Exception {
@@ -80,7 +86,7 @@ public class HttpClient4OutboundHandler implements HttpOutboundHandler {
     }
 
     private String availableEndpoint(final String uri) throws Exception {
-        String url = router.getEndPoint() + uri;
+        String url = routerFactory.getRouter().getEndPoint() + uri;
         if(!url.startsWith("http")) {
             url = "http://" + url;
         }

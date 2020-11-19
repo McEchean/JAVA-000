@@ -5,31 +5,33 @@ import com.github.zibuyu28.router.endpoint.EndpointsProvider;
 import com.github.zibuyu28.router.endpoint.EtcdConfigEndpointsProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Random;
 
+@Component
+@Lazy
 public class RandomEndpointRouter implements HttpEndpointRouter {
     private static final Logger log = LoggerFactory.getLogger(RandomEndpointRouter.class);
 
-    public static class F {
-        private static RandomEndpointRouter INSTANCE = new RandomEndpointRouter();
-    }
+//    public static class F {
+//        private static RandomEndpointRouter INSTANCE = new RandomEndpointRouter();
+//    }
+//
+//    public static RandomEndpointRouter getInstance() {
+//        return F.INSTANCE;
+//    }
 
-    public static RandomEndpointRouter getInstance() {
-        return F.INSTANCE;
-    }
 
-
-    private final EndpointsProvider endpointsProvider;
-
-    private RandomEndpointRouter() {
-        this.endpointsProvider = EndpointProviderFactory.newProvider();
-    }
+    @Autowired
+    private EndpointProviderFactory providerFactory;
 
     @Override
     public String getEndPoint() throws Exception {
-        List<String> endpoint = endpointsProvider.availableEndpoints();
+        List<String> endpoint = providerFactory.getProvider().availableEndpoints();
         if(endpoint.size() == 0) {
             throw new RuntimeException("no available endpoint");
         }

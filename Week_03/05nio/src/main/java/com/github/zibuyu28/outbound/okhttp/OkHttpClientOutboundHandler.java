@@ -13,7 +13,11 @@ import okhttp3.*;
 import org.apache.http.client.HttpResponseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -24,6 +28,8 @@ import static io.netty.handler.codec.http.HttpResponseStatus.INTERNAL_SERVER_ERR
 import static io.netty.handler.codec.http.HttpResponseStatus.OK;
 import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
+@Component
+@Lazy
 public class OkHttpClientOutboundHandler implements HttpOutboundHandler {
 
     private final static Logger log = LoggerFactory.getLogger(OkHttpClientOutboundHandler.class);
@@ -32,14 +38,16 @@ public class OkHttpClientOutboundHandler implements HttpOutboundHandler {
         private static OkHttpClientOutboundHandler INSTANCE = new OkHttpClientOutboundHandler();
     }
 
-    private final OkHttpClient okClient;
+    private OkHttpClient okClient;
 
-    private final HttpEndpointRouter router;
 
-    private final ThreadPoolExecutor executor;
+    private ThreadPoolExecutor executor;
 
-    public OkHttpClientOutboundHandler() {
-        this.router = RouterFactory.newRouter();
+    @Autowired
+    private RouterFactory routerFactory;
+
+    @PostConstruct
+    public void init() {
         int cores = Runtime.getRuntime().availableProcessors() * 2;
         int timeout = 1000;
         int queueSize = 1024;
@@ -57,21 +65,6 @@ public class OkHttpClientOutboundHandler implements HttpOutboundHandler {
 
     public static OkHttpClientOutboundHandler getInstance() {
         return F.INSTANCE;
-    }
-
-    public OkHttpClientOutboundHandler(OkHttpClient client) {
-        this.router = RouterFactory.newRouter();
-        int cores = Runtime.getRuntime().availableProcessors() * 2;
-        int timeout = 1000;
-        int queueSize = 1024;
-
-        this.executor = new ThreadPoolExecutor(
-                cores, cores, timeout, TimeUnit.MILLISECONDS,
-                new ArrayBlockingQueue<>(queueSize),
-                new NamedThreadFactory("okhttp-client"),
-                new ThreadPoolExecutor.AbortPolicy());
-
-        this.okClient = client;
     }
 
 
@@ -150,7 +143,7 @@ public class OkHttpClientOutboundHandler implements HttpOutboundHandler {
 
 
     private String availableEndpoint(final String uri) throws Exception {
-        String url = router.getEndPoint() + uri;
+        String url = routerFactory.getRouter().getEndPoint() + uri;
         if(!url.startsWith("http")) {
             url = "http://" + url;
         }

@@ -18,16 +18,21 @@ import io.netty.util.concurrent.FutureListener;
 import io.netty.util.concurrent.GenericFutureListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Component;
 
 import java.net.URI;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Component
+@Lazy
 public class NettyClientOutboundHandler implements HttpOutboundHandler {
     private static final Logger log = LoggerFactory.getLogger(NettyClientOutboundHandler.class);
 
-    private static class F {
-        private static final NettyClientOutboundHandler INSTANCE = new NettyClientOutboundHandler();
-    }
+//    private static class F {
+//        private static final NettyClientOutboundHandler INSTANCE = new NettyClientOutboundHandler();
+//    }
 
     public static final AttributeKey<ChannelHandlerContext> CURRENT_REQ_BOUND_WITH_THE_CHANNEL =
             AttributeKey.valueOf("CURRENT_REQ_BOUND_WITH_THE_CHANNEL");
@@ -50,15 +55,18 @@ public class NettyClientOutboundHandler implements HttpOutboundHandler {
         }
     };
 
-    private final HttpEndpointRouter router;
+//    private final HttpEndpointRouter router;
 
-    private NettyClientOutboundHandler() {
-        this.router = RouterFactory.newRouter();
-    }
+    @Autowired
+    private RouterFactory routerFactory;
 
-    public static NettyClientOutboundHandler getInstance() {
-        return F.INSTANCE;
-    }
+//    private NettyClientOutboundHandler() {
+//        this.router = RouterFactory.newRouter();
+//    }
+
+//    public static NettyClientOutboundHandler getInstance() {
+//        return F.INSTANCE;
+//    }
 
     @Override
     public void handle(final FullHttpRequest fullRequest, final ChannelHandlerContext ctxn) throws Exception {
@@ -135,7 +143,7 @@ public class NettyClientOutboundHandler implements HttpOutboundHandler {
     }
 
     private String availableEndpoint() throws Exception {
-        String addr = router.getEndPoint();
+        String addr = routerFactory.getRouter().getEndPoint();
         if (addr.startsWith("http")) {
             addr = addr.replaceFirst("http://", "");
         }

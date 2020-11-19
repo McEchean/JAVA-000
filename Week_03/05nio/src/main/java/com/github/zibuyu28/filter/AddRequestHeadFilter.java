@@ -5,7 +5,9 @@ import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.HttpHeaders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
+@Component
 public class AddRequestHeadFilter implements HttpRequestFilter {
     private static final Logger log = LoggerFactory.getLogger(AddRequestHeadFilter.class);
     @Override

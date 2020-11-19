@@ -13,10 +13,19 @@ import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class HttpInboundServer {
 
     private final static Logger log = LoggerFactory.getLogger(HttpInboundServer.class);
+
+    private final HttpInboundInitializer httpInboundInitializer;
+
+    public HttpInboundServer(HttpInboundInitializer httpInboundInitializer) {
+        this.httpInboundInitializer = httpInboundInitializer;
+    }
 
 
     public void run() throws InterruptedException {
@@ -38,7 +47,7 @@ public class HttpInboundServer {
             serverBootstrap.group(bossEventLoop, workerEventLoop);
             serverBootstrap.channel(NioServerSocketChannel.class)
                     .handler(new LoggingHandler(LogLevel.INFO))
-                    .childHandler(new HttpInboundInitializer());
+                    .childHandler(httpInboundInitializer);
             int port = Integer.parseInt(Prop.getOrDefault("inbound.listen.port", "9888"));
             Channel ch = serverBootstrap.bind(port).sync().channel();
             log.info("开启netty http服务器，监听地址和端口为 http://127.0.0.1:" + port + '/');
