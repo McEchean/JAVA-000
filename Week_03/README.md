@@ -102,3 +102,5 @@
       Requests/sec:   6116.40
       Transfer/sec:    286.71KB
         ```
+
+6. router做AOP不好切，是我功底太薄了

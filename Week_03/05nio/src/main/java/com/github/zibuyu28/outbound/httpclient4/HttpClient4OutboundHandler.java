@@ -2,8 +2,6 @@ package com.github.zibuyu28.outbound.httpclient4;
 
 import com.github.zibuyu28.outbound.HttpOutboundHandler;
 import com.github.zibuyu28.outbound.NamedThreadFactory;
-import com.github.zibuyu28.router.HttpEndpointRouter;
-import com.github.zibuyu28.router.RandomEndpointRouter;
 import com.github.zibuyu28.router.RouterFactory;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;

@@ -42,9 +42,9 @@ public class HttpInboundHandler extends ChannelInboundHandlerAdapter {
         try {
             log.info("channelRead 接收到请求, 获取到 msg 类型是 : {}", msg.getClass().getName());
             FullHttpRequest fullRequest = (FullHttpRequest) msg;
-            for (HttpRequestFilter ft :filters) {
-                ft.filter(fullRequest, ctx);
-            }
+//            for (HttpRequestFilter ft :filters) {
+//                ft.filter(fullRequest, ctx);
+//            }
             outboundFactory.getOutboundHandler().handle(fullRequest, ctx);
         } catch(Exception e) {
             e.printStackTrace();
