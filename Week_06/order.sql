@@ -1,0 +1,20 @@
+CREATE TABLE `order` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `uuid` varchar(64) NOT NULL DEFAULT '',
+  `user_id` int(11) NOT NULL,
+  `product_id` int(11) NOT NULL,
+  `product_count` int(11) NOT NULL,
+  `shipping_fee` decimal(18,2) NOT NULL,
+  `sum_fee` decimal(18,2) NOT NULL,
+  `real_fee` decimal(18,2) NOT NULL,
+  `state` tinyint(8) NOT NULL,
+  `order_time` datetime NOT NULL,
+  `pay_time` datetime NOT NULL,
+  `deal_time` datetime NOT NULL,
+  `address_id` int(11) NOT NULL,
+  `snapshot_id` int(11) NOT NULL,
+  `delete` tinyint(1) NOT NULL DEFAULT '0',
+  `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `update_time` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
