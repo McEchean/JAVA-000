@@ -1,10 +1,10 @@
 package com.github.zibuyu28.inbound;
 
-import com.github.zibuyu28.filter.AddRequestHeadFilter;
 import com.github.zibuyu28.filter.HttpRequestFilter;
-import com.github.zibuyu28.outbound.HttpOutboundHandler;
+import com.github.zibuyu28.mq.JMSRequestSender;
+import com.github.zibuyu28.mq.JMSResponseListener;
+import com.github.zibuyu28.mq.MessageRequest;
 import com.github.zibuyu28.outbound.OutboundFactory;
-import com.github.zibuyu28.outbound.OutboundHandlerType;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.FullHttpRequest;
@@ -12,12 +12,11 @@ import io.netty.util.ReferenceCountUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @Component
@@ -30,6 +29,10 @@ public class HttpInboundHandler extends ChannelInboundHandlerAdapter {
     private final List<HttpRequestFilter> filters = new ArrayList<>();
     @Autowired
     private OutboundFactory outboundFactory;
+    @Autowired
+    private JMSResponseListener listener;
+    @Autowired
+    private JMSRequestSender sender;
 
     @Override
     public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
@@ -45,7 +48,17 @@ public class HttpInboundHandler extends ChannelInboundHandlerAdapter {
 //            for (HttpRequestFilter ft :filters) {
 //                ft.filter(fullRequest, ctx);
 //            }
-            outboundFactory.getOutboundHandler().handle(fullRequest, ctx);
+            listener.Register(ctx);
+            MessageRequest messageRequest = new MessageRequest();
+            HashMap<String,String> headers = new HashMap<>();
+            messageRequest.setCtxAddr(ctx.toString());
+            messageRequest.setReqURI(fullRequest.uri());
+            fullRequest.headers().forEach(item->headers.put(item.getKey(), item.getValue()));
+            messageRequest.setHeaders(headers);
+            sender.send(messageRequest);
+//            outboundFactory.getOutboundHandler().handle(fullRequest, ctx);
+
+            // send msg;
         } catch(Exception e) {
             e.printStackTrace();
         } finally {

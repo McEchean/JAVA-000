@@ -3,8 +3,15 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:aop="http://www.springframework.org/schema/aop"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd http://www.springframework.org/schema/aop https://www.springframework.org/schema/aop/spring-aop.xsd"
+       xmlns:jms="http://www.springframework.org/schema/jms"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context-3.2.xsd
+        http://www.springframework.org/schema/aop
+        https://www.springframework.org/schema/aop/spring-aop.xsd
+        http://www.springframework.org/schema/jms
+        http://www.springframework.org/schema/jms/spring-jms-3.0.xsd"
        default-lazy-init="true">
 
 
@@ -20,4 +27,31 @@
 <!--            <aop:around method="aroundAdvice" pointcut-ref="routerCut"/>-->
 <!--        </aop:aspect>-->
     </aop:config>
+
+
+
+    <bean id="connectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+        <property name = "brokerURL" value="tcp://localhost:61616" />
+        <property name="trustAllPackages" value="true" />
+    </bean>
+
+    <bean id="queue1" class="org.apache.activemq.command.ActiveMQQueue">
+        <constructor-arg value = "request.queue" />
+    </bean>
+
+    <bean id="queue2" class="org.apache.activemq.command.ActiveMQQueue">
+        <constructor-arg value = "response.queue" />
+    </bean>
+
+    <bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+        <property name = "connectionFactory" ref="connectionFactory" />
+    </bean>
+
+    <jms:listener-container
+            container-type="default"
+            connection-factory="connectionFactory"
+            acknowledge="auto">
+        <jms:listener destination="request.queue" ref="jmsRequestListener" method="onMessage"/>
+        <jms:listener destination="response.queue" ref="jmsResponseListener" method="onMessage"/>
+    </jms:listener-container>
 </beans>

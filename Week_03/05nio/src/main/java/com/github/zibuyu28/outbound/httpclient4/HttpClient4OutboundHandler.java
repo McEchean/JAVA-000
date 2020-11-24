@@ -1,5 +1,9 @@
 package com.github.zibuyu28.outbound.httpclient4;
 
+import com.github.zibuyu28.mq.JMSRequestListener;
+import com.github.zibuyu28.mq.JMSResponseSender;
+import com.github.zibuyu28.mq.MessageRequest;
+import com.github.zibuyu28.mq.MessageResponse;
 import com.github.zibuyu28.outbound.HttpOutboundHandler;
 import com.github.zibuyu28.outbound.NamedThreadFactory;
 import com.github.zibuyu28.router.RouterFactory;
@@ -45,6 +49,8 @@ public class HttpClient4OutboundHandler implements HttpOutboundHandler {
 
     @Autowired
     private RouterFactory routerFactory;
+    @Autowired
+    private JMSResponseSender sender;
 
     private CloseableHttpAsyncClient httpclient;
     private ExecutorService proxyService;
@@ -75,6 +81,38 @@ public class HttpClient4OutboundHandler implements HttpOutboundHandler {
     }
 
 
+    public void handle2(MessageRequest msg) throws Exception {
+        log.info("req uri : {}", msg.getReqURI());
+        final String url = availableEndpoint(msg.getReqURI());
+        proxyService.submit(()->fetchGet2(url, msg.getCtxAddr()));
+    }
+    private void fetchGet2(final String url , final String ctxAddr) {
+        final HttpGet httpGet = new HttpGet(url);
+        httpGet.setHeader(HTTP.CONN_DIRECTIVE, HTTP.CONN_KEEP_ALIVE);
+        httpclient.execute(httpGet, new FutureCallback<HttpResponse>() {
+            @Override
+            public void completed(final HttpResponse endpointResponse) {
+                try {
+                    handleResponse2(ctxAddr, endpointResponse);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+
+                }
+            }
+
+            @Override
+            public void failed(final Exception ex) {
+                httpGet.abort();
+                ex.printStackTrace();
+            }
+
+            @Override
+            public void cancelled() {
+                httpGet.abort();
+            }
+        });
+    }
 
 
     public void handle(FullHttpRequest req, ChannelHandlerContext ctx) throws Exception {
@@ -117,6 +155,19 @@ public class HttpClient4OutboundHandler implements HttpOutboundHandler {
                 httpGet.abort();
             }
         });
+    }
+    private void handleResponse2(final String ctxAddr, final HttpResponse endpointResponse) throws Exception {
+        FullHttpResponse response = null;
+        try {
+            byte[] body = EntityUtils.toByteArray(endpointResponse.getEntity());
+            sender.send(new MessageResponse(ctxAddr,body));
+            response = new DefaultFullHttpResponse(HTTP_1_1, OK, Unpooled.wrappedBuffer(body));
+            response.headers().setInt("Content-Length", body.length);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            response = new DefaultFullHttpResponse(HTTP_1_1, NO_CONTENT);
+        }
     }
 
     private void handleResponse(final FullHttpRequest fullRequest, final ChannelHandlerContext ctx, final HttpResponse endpointResponse) throws Exception {
