@@ -6,9 +6,6 @@
     <groupId>io.github.zibuyu28</groupId>
     <artifactId>homework</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <modules>
-        <module>src/main/java/com/github/zibuyu28/saturday/fourth</module>
-    </modules>
     <packaging>pom</packaging>
 
     <name>homework</name>
@@ -34,6 +31,13 @@
             <artifactId>HikariCP</artifactId>
             <version>3.4.5</version>
         </dependency>
+
+        <dependency>
+            <groupId>net.bytebuddy</groupId>
+            <artifactId>byte-buddy</artifactId>
+            <version>1.8.0</version>
+        </dependency>
+
 
 
 
