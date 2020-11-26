@@ -1,5 +1,6 @@
 package com.github.zibuyu28.thursday.fourth.four;
 
+@Log
 public class Foo {
     private String name;
 
