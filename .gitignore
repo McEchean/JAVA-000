@@ -5,3 +5,4 @@
 
 *target*
 /Week_04/test/
+*.mvn/
