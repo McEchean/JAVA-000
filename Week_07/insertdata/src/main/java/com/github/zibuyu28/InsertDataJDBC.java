@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 
 public class InsertDataJDBC {
     private final static String JDBC_DRIVER = "com.mysql.cj.jdbc.Driver";
-    private final static String DB_URL = "jdbc:mysql://localhost:3306/blocface";
+    private final static String DB_URL = "jdbc:mysql://localhost:3306/blocface?rewriteBatchedStatements=true";
     private final static String USER = "root";
     private final static String PASSWORD = "admin123";
     private ArrayBlockingQueue<Connection> connections = new ArrayBlockingQueue<Connection>(20);
@@ -57,7 +57,7 @@ public class InsertDataJDBC {
 
 
     public void insertData() {
-        insertOneByOne();
+//        insertOneByOne();
         insetBatchMain();
     }
 
