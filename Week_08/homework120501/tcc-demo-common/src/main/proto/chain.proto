@@ -5,7 +5,7 @@ option java_multiple_files = true;
 
 service ChainStatusService {
 
-  rpc UpdateStatus(ChainState) returns (ChainStateResponse) {}
+  rpc updateStatus(ChainState) returns (ChainStateResponse) {}
 
 }
 

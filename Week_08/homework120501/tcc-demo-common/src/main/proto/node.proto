@@ -3,7 +3,7 @@ option java_package = "com.github.zibuyu28.node.service";
 option java_multiple_files = true;
 
 service OpNodeService {
-  rpc DoAction(Action) returns (OpNodeResponse);
+  rpc doAction(Action) returns (OpNodeResponse);
 }
 
 message Action {

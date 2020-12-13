@@ -5,7 +5,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @EnableTransactionManagement
@@ -14,7 +13,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 		MongoAutoConfiguration.class,
 		MongoDataAutoConfiguration.class
 })
-@EnableAspectJAutoProxy(proxyTargetClass = true)
 public class TccDemoChainApplication {
 
 	public static void main(String[] args) {

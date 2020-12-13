@@ -38,4 +38,36 @@
    ```
 
 2. 配置maven生成不可执行的jar包，需要配置spring-boot-maven-plugin的configuration.layout为NONE
-   
+
+3. proto编写
+* 示例
+    ```protobuf
+    syntax = "proto3";
+    option java_package = "com.github.zibuyu28.chain.service";
+    option java_multiple_files = true;
+    
+    
+    service ChainStatusService {
+    
+      rpc updateStatus(ChainState) returns (ChainStateResponse) {}
+    
+    }
+    
+    
+    message ChainState {
+    
+      int32 ChainID = 1;
+      int32 State = 2;
+      string Message = 3;
+    
+    }
+    
+    message ChainStateResponse {
+    
+      int32 Code = 1;
+      string Data = 2;
+      string Err = 3;
+    
+    }
+    ```
+   一开始将service的rpc方法的首字母大写了，导致 GrpcHmilyTransactionFilter 一直无效; `可能是个缺陷`
