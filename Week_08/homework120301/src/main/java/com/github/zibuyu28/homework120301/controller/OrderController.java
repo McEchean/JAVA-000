@@ -16,7 +16,7 @@ public class OrderController {
     @Autowired
     private OrderImpl order;
 
-    @PatchMapping("/insert")
+    @PutMapping("/insert")
     public ResponseEntity<String> testInsert() {
         order.insetBatchMain();
         return new ResponseEntity<>("execute ok",HttpStatus.OK);
@@ -34,7 +34,7 @@ public class OrderController {
         return new ResponseEntity<>("delete ok",HttpStatus.OK);
     }
 
-    @PatchMapping("/insertone")
+    @PutMapping("/insertone")
     public ResponseEntity<String> testInsertOne() {
         OrderDao orderDao = new OrderDao();
         orderDao.setUuid(UUID.randomUUID().toString());
