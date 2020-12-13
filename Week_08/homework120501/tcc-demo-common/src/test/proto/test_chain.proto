@@ -1,0 +1,25 @@
+syntax = "proto3";
+option java_package = "com.github.zibuyu28.chain.service";
+
+
+service Chain {
+
+  rpc SetStatus(ChainState) returns (Response) {}
+
+}
+
+
+message ChainState {
+
+  int32 State = 1;
+  string Message = 2;
+
+}
+
+message Response {
+
+  int32 Code = 1;
+  string Data = 2;
+  string Message = 3;
+
+}

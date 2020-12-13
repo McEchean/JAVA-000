@@ -1,0 +1,27 @@
+syntax = "proto3";
+option java_package = "com.github.zibuyu28.chain.service";
+option java_multiple_files = true;
+
+
+service ChainStatusService {
+
+  rpc UpdateStatus(ChainState) returns (ChainStateResponse) {}
+
+}
+
+
+message ChainState {
+
+  int32 ChainID = 1;
+  int32 State = 2;
+  string Message = 3;
+
+}
+
+message ChainStateResponse {
+
+  int32 Code = 1;
+  string Data = 2;
+  string Err = 3;
+
+}

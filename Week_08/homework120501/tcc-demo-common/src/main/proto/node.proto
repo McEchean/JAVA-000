@@ -1,0 +1,21 @@
+syntax = "proto3";
+option java_package = "com.github.zibuyu28.node.service";
+option java_multiple_files = true;
+
+service OpNodeService {
+  rpc DoAction(Action) returns (OpNodeResponse);
+}
+
+message Action {
+  int32 NodeID = 1;
+  string Action = 2;
+  string Param = 3;
+}
+
+message OpNodeResponse {
+
+  int32 Code = 1;
+  string Data = 2;
+  string Err = 3;
+
+}
