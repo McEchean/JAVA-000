@@ -7,6 +7,7 @@ import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import org.dromara.hmily.grpc.client.GrpcHmilyClient;
 import org.dromara.hmily.grpc.filter.GrpcHmilyTransactionFilter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -15,6 +16,9 @@ import javax.annotation.PostConstruct;
 public class OpNodeClient {
 
     private OpNodeServiceGrpc.OpNodeServiceBlockingStub opNodeServiceBlockingStub;
+
+    @Autowired
+    private GrpcHmilyClient grpcHmilyClient;
 
     @PostConstruct
     private void init() {
@@ -29,7 +33,7 @@ public class OpNodeClient {
                 .setAction("updateConfig")
                 .setParam(config).build();
 
-        OpNodeResponse response = GrpcHmilyClient.syncInvoke(opNodeServiceBlockingStub, "doAction", action, OpNodeResponse.class);
+        OpNodeResponse response = grpcHmilyClient.syncInvoke(opNodeServiceBlockingStub, "doAction", action, OpNodeResponse.class);
         if(response != null) {
             return response.getCode() == 200;
         } else {

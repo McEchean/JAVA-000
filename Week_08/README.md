@@ -74,3 +74,4 @@
    一开始将service的rpc方法的首字母大写了，导致 GrpcHmilyTransactionFilter 一直无效; `可能是个缺陷`
 
 4. hmily测试的时候发现grpc的服务增加HmilyTCC注解无效，测试了官方demo之后也发现一直处于冻结状态，无法cancel，这个问题已经和猫大人反馈并且提了issue，希望能得到解决
+    * 2020.12.14：hmily官方已经修复这个缺陷，，目前流程正常

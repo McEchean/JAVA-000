@@ -11,6 +11,7 @@ import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import org.dromara.hmily.grpc.client.GrpcHmilyClient;
 import org.dromara.hmily.grpc.filter.GrpcHmilyTransactionFilter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -18,6 +19,9 @@ import javax.annotation.PostConstruct;
 @Service
 public class ChainStateClient {
     private ChainStatusServiceGrpc.ChainStatusServiceBlockingStub chainStatusServiceBlockingStub;
+
+    @Autowired
+    private GrpcHmilyClient grpcHmilyClient;
 
     @PostConstruct
     private void init() {
@@ -32,7 +36,7 @@ public class ChainStateClient {
                 .setState(state)
                 .setMessage(message).build();
 
-        ChainStateResponse response = GrpcHmilyClient.syncInvoke(chainStatusServiceBlockingStub, "updateStatus", chainState, ChainStateResponse.class);
+        ChainStateResponse response = grpcHmilyClient.syncInvoke(chainStatusServiceBlockingStub, "updateStatus", chainState, ChainStateResponse.class);
         if(response != null) {
             return response.getCode() == 200;
         } else {
