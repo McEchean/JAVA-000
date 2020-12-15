@@ -14,7 +14,7 @@ public class DemoResolver implements RpcfxResolver, ApplicationContextAware {
     }
 
     @Override
-    public Object resolve(String serviceClass) {
-        return this.applicationContext.getBean(serviceClass);
+    public <T> T resolve(Class<T> klass) {
+        return this.applicationContext.getBean(klass);
     }
 }

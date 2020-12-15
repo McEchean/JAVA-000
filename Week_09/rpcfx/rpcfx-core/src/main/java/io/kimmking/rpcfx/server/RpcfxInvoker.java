@@ -24,7 +24,16 @@ public class RpcfxInvoker {
         String serviceClass = request.getServiceClass();
 
         // 作业1：改成泛型和反射
-        Object service = resolver.resolve(serviceClass);//this.applicationContext.getBean(serviceClass);
+        Class<?> klass = null;
+        try {
+            klass = Class.forName(serviceClass);
+        }catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            response.setException(new RpcfxException("invoke error",e));
+            response.setStatus(false);
+            return response;
+        }
+        Object service = resolver.resolve(klass);//this.applicationContext.getBean(serviceClass);
         try {
             Method method = resolveMethodFromClass(service.getClass(), request.getMethod());
             Object result = method.invoke(service, request.getParams()); // dubbo, fastjson,
