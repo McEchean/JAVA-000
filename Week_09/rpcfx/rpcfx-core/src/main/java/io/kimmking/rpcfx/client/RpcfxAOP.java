@@ -20,11 +20,16 @@ import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.nio.charset.StandardCharsets;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class RpcfxAOP {
 
+    public static ConcurrentHashMap<String, Object> objectCache = new ConcurrentHashMap<>();
+
     public static  <T> T invoker(Class<T> klass, String url) {
+        if(objectCache.containsKey(klass.getName())) {
+            return (T)objectCache.get(klass.getName());
+        }
         try {
             T o = (T)new ByteBuddy().subclass(Object.class)
                     .implement(klass)
@@ -63,8 +68,6 @@ public class RpcfxAOP {
         @Override
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
             System.out.println("bytebuddy delegate proxy2 before sing : " + method.getName());
-
-
             RpcfxRequest request = new RpcfxRequest();
             request.setServiceClass(this.targetClass);
             request.setMethod(method.getName());
@@ -99,8 +102,7 @@ public class RpcfxAOP {
 
         private RpcfxResponse postNettyClient(RpcfxRequest req) {
             try {
-                NettyClient nettyClient = new NettyClient(new HostAndPortConfig("127.0.0.1",8080));
-                nettyClient.initConnection();
+                NettyClient nettyClient = newNettyClient();
                 String reqJson = JSON.toJSONString(req);
                 NettyHttpResponse nettyHttpResponse = nettyClient.doPost(this.url, reqJson);
                 String body = nettyHttpResponse.getBody();
@@ -108,6 +110,16 @@ public class RpcfxAOP {
             } catch (Exception e) {
                 throw new RpcfxException(e);
             }
+        }
+
+        private NettyClient newNettyClient() {
+            String urlTarget = this.url;
+            urlTarget = urlTarget.startsWith("https://") ? urlTarget.substring(8) : urlTarget;
+            urlTarget = urlTarget.startsWith("http://") ? urlTarget.substring(7) : urlTarget;
+            String[] split = urlTarget.split("/");
+            NettyClient nettyClient = new NettyClient(new HostAndPortConfig(split[0], Integer.parseInt(split[1])));
+            nettyClient.initConnection();
+            return nettyClient;
         }
 
     }
