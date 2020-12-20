@@ -1,0 +1,35 @@
+server:
+  port: 8088
+
+spring:
+  application:
+    name: usd-center
+  datasource:
+    url: jdbc:mysql://localhost:3306/db?useSSL=false&serverTimezone=GMT%2B8&characterEncoding=UTF-8
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: admin123
+
+mybatis:
+  type-aliases-package: com.github.zibuyu28.usdcenter.mapper
+
+
+dubbo:
+  scan:
+    base-packages: com.github.zibuyu28.usdcenter.service
+  protocol:
+    name: dubbo
+    port: 12345
+  registry:
+    address: zookeeper://localhost:2181
+  metadata-report:
+    address: zookeeper://localhost:2181
+  application:
+    qosEnable: true
+    qosPort: 22222
+    qosAcceptForeignIp: true
+    qos-enable-compatible: true
+    qos-host-compatible: localhost
+    qos-port-compatible: 22222
+    qos-accept-foreign-ip-compatible: true
+    qos-host: localhost
