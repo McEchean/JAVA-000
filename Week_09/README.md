@@ -10,4 +10,4 @@
     * 起初exchange项目配置了application.yml,启动之后配置无法读取，后来改成 application.yaml文件就可以读取
         * 查了原因是因为配置了`<packaging>pom</packaging>`导致的，把这个改成`<packaging>jar</packaging>`即可，因为子模块直接继承了父模块的这个属性
     * mybatis 无法执行：sql中变量映射方式写错 `{#user_id}` -> `#{user_id}`
-    * 注意余额大于等于零判断，发现hmily里面sql的条件是`balance > 0`这个会有问题，会导致出现负值现象，应改为 `balance - ? >= 0`即可
+    * 注意余额大于等于零判断，发现hmily里面sql的条件是`balance > 0`这个会有问题，会导致出现负值现象，应改为 `balance >= ?`即可
