@@ -5,7 +5,7 @@ import io.kimmking.rpcfx.demo.api.UserService;
 
 public class UserServiceImpl implements UserService {
     @Override
-    public User findById(int id) {
+    public User findById(Integer id) {
 
         return null;
     }

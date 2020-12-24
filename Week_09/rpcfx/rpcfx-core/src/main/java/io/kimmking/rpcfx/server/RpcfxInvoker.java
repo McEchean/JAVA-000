@@ -6,16 +6,22 @@ import io.kimmking.rpcfx.api.RpcfxRequest;
 import io.kimmking.rpcfx.api.RpcfxResolver;
 import io.kimmking.rpcfx.api.RpcfxResponse;
 import io.kimmking.rpcfx.common.RpcfxException;
+import org.apache.catalina.filters.RemoteIpFilter;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 
-public class RpcfxInvoker {
+public class RpcfxInvoker implements ApplicationContextAware {
 
     private RpcfxResolver resolver;
 
-    public RpcfxInvoker(RpcfxResolver resolver){
+    private ApplicationContext applicationContext; // 和 spring 强耦合
+
+    public RpcfxInvoker(RpcfxResolver resolver) {
         this.resolver = resolver;
     }
 
@@ -27,35 +33,57 @@ public class RpcfxInvoker {
         Class<?> klass = null;
         try {
             klass = Class.forName(serviceClass);
-        }catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            response.setException(new RpcfxException("invoke error",e));
+        } catch (ClassNotFoundException e) {
+            response.setException(new RpcfxException("reflect error", e));
             response.setStatus(false);
             return response;
         }
-        Object service = resolver.resolve(klass);//this.applicationContext.getBean(serviceClass);
+        Object service = resolver.resolve(klass);
+//        Object service = applicationContext.getBean(request.getServiceClass());
         try {
+
             Method method = resolveMethodFromClass(service.getClass(), request.getMethod());
             Object result = method.invoke(service, request.getParams()); // dubbo, fastjson,
+//            Method method1 = methodResolve(klass, request);
+//            Object result1 = method1.invoke(service, request.getParams());
+
             // 两次json序列化能否合并成一个
             response.setResult(JSON.toJSONString(result, SerializerFeature.WriteClassName));
             response.setStatus(true);
             return response;
-        } catch ( IllegalAccessException | InvocationTargetException | NullPointerException e) {
+        } catch (IllegalAccessException | InvocationTargetException | NullPointerException e) {
 
             // 3.Xstream
 
             // 2.封装一个统一的RpcfxException
             // 客户端也需要判断异常
             e.printStackTrace();
-            response.setException(new RpcfxException("invoke error",e));
+            response.setException(new RpcfxException("invoke error", e));
             response.setStatus(false);
             return response;
         }
     }
 
     private Method resolveMethodFromClass(Class<?> klass, String methodName) {
+
         return Arrays.stream(klass.getMethods()).filter(m -> methodName.equals(m.getName())).findFirst().orElse(null);
     }
 
+
+    private Method methodResolve(Class<?> klass, RpcfxRequest request) {
+        try {
+            Class<?>[] klasses = new Class[request.getParams().length];
+            for (int i = 0; i < request.getParams().length; i++) {
+                klasses[i] = request.getParams()[i].getClass();
+            }
+            return klass.getMethod(request.getMethod(), klasses);
+        } catch (Exception e) {
+            throw new RpcfxException("resolve method", e);
+        }
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
+    }
 }

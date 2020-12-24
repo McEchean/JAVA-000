@@ -5,7 +5,7 @@ import io.kimmking.rpcfx.client.ARpcfx;
 public interface UserService {
 
     @ARpcfx
-    default User findById(int id) {
+    default User findById(Integer id) {
         System.out.println("hello");
         return null;
     }
