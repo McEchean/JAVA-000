@@ -14,6 +14,16 @@ services:
       - ./redis0_data:/data
     networks:
       - redis-net
+  redis0-sentinel:
+    image: bitnami/redis-sentinel:latest
+    container_name: redis0-sentinel
+    environment:
+      - REDIS_MASTER_HOST=192.168.31.128
+      - REDIS_MASTER_PORT_NUMBER=6379
+    ports:
+      - 26379:26379
+    networks:
+      - redis-net
   redis1:
     image: bitnami/redis:latest
     container_name: redis1
@@ -28,7 +38,17 @@ services:
     volumes:
       - ./redis1_data:/data   
     networks:
-      - redis-net
+      - redis-net 
+  redis1-sentinel:
+    image: bitnami/redis-sentinel:latest
+    container_name: redis1-sentinel
+    environment:
+      - REDIS_MASTER_HOST=192.168.31.128
+      - REDIS_MASTER_PORT_NUMBER=6380
+    ports:
+      - 26380:26379
+    networks:
+      - redis-net  
 
 networks:
   redis-net:

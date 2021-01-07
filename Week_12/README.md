@@ -8,4 +8,49 @@
         * 查了一下原因：如果设置为true就需要将redis和你的程序放到同一台机器上或者同一局域网上面或者关闭该模式。因为是docker的原因导致这个测试不通
    
     
-2. redis-cluster -> 还没有尝试
+2. redis-cluster
+    * 配置一个节点得配置文件
+    ```shell script
+    # 节点端口
+    port 6380
+    #日志文件
+    logfile "log/redis-6380.log"
+    # 开启集群模式
+    cluster-enabled yes
+    # 集群配置文件
+    cluster-config-file "data/nodes-6380.conf"
+    ```
+    * 配置完成之后建好文件夹 log, data
+    * 启动脚本 start.sh
+    ```shell script
+    redis-server conf/redis-6380.conf &
+    redis-server conf/redis-6381.conf &
+    redis-server conf/redis-6382.conf &
+    redis-server conf/redis-6383.conf &
+    redis-server conf/redis-6384.conf &
+    redis-server conf/redis-6385.conf &
+    ```
+   * 停止脚本 stop.sh
+   ```shell script
+    ps -ef|grep redis-server|grep -v grep|awk '{print $2}'|xargs kill -9
+    rm -rf log/*
+    rm -rf data/*
+   ```
+   * 启动之后需要配置握手，meet命令  
+        * 进入第一个节点执行 `cluster meet 127.0.0.1 6381`
+        * 依次执行 6382 6383 6384 6385
+   * 集群模式至少三个节点，还有三个节点配置主从
+        * 使用命令 `cluster replicate 主节点ID`
+   * 分配16383个槽位
+     * 命令 `redis-cli -h 127.0.0.1  -p 6380 cluster addslots {0..5461}`
+     * 命令 `redis-cli -h 127.0.0.1  -p 6382 cluster addslots {5462..10922}`
+     * 命令 `redis-cli -h 127.0.0.1  -p 6384 cluster addslots {10923..16383}`
+     
+   * 测试得时候redis-cli 一定要加上参数 -c， 不然测试会报错类似： `(error) MOVED 5798 127.0.0.1:7001`
+3. 一种更快速得部署方案，使用redis-cli
+    * 首先启动 6 个 redis节点
+    * 然后执行命令
+    ```shell script
+    redis-cli --cluster create 127.0.0.1:6380 127.0.0.1:6381 127.0.0.1:6382 127.0.0.1:6383 127.0.0.1:6384 127.0.0.1:6385 --cluster-replicas 1
+    ```
+    * 搭建完成
