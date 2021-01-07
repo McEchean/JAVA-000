@@ -1,0 +1,54 @@
+---
+version: '3'
+services:
+  redis0:
+    image: bitnami/redis:latest
+    container_name: redis0
+    restart: always
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+      - REDIS_REPLICATION_MODE=master
+    ports:
+      - 6379:6379
+    volumes:
+      - ./redis0_data:/data
+    networks:
+      - redis-net
+  redis0-sentinel:
+    image: bitnami/redis-sentinel:latest
+    container_name: redis0-sentinel
+    environment:
+      - REDIS_MASTER_HOST=redis0
+    ports:
+      - 26379:26379
+    networks:
+      - redis-net
+  redis1:
+    image: bitnami/redis:latest
+    container_name: redis1
+    restart: always
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+      - REDIS_REPLICATION_MODE=slave
+      - REDIS_MASTER_HOST=redis0
+      - REDIS_MASTER_PORT_NUMBER=6379
+    ports:
+      - 6380:6379
+    volumes:
+      - ./redis1_data:/data   
+    networks:
+      - redis-net 
+  redis1-sentinel:
+    image: bitnami/redis-sentinel:latest
+    container_name: redis1-sentinel
+    environment:
+      - REDIS_MASTER_HOST=redis1
+    ports:
+      - 26380:26379
+    networks:
+      - redis-net  
+
+networks:
+  redis-net:
+    driver: bridge
+
